@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>කුඹුරු මුදලාලි - Paddy Tycoon v2</title>
-    <!-- ටෙලිග්‍රෑම් ලින්ක් වැඩ කරවන්න මේ ස්ක්‍රිප්ට් එක අනිවාර්යයි -->
+    <title>කුඹුරු මුදලාලි - Paddy Tycoon v2.1</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #121212; color: white; text-align: center; margin: 0; padding: 15px; }
@@ -18,14 +17,15 @@
         .locked { opacity: 0.4; }
         .lock-text { font-size: 12px; color: #ff5252; font-weight: bold; margin-top: 5px; }
         .icon { font-size: 45px; margin-bottom: 5px; }
-        .status-text { font-size: 13px; color: #bbb; height: 35px; display: flex; align-items: center; justify-content: center; }
-        .btn { background: #4CAF50; color: white; border: none; padding: 10px; font-size: 14px; border-radius: 8px; cursor: pointer; width: 90%; font-weight: bold; transition: 0.2s; margin-top: 5px; }
+        .status-text { font-size: 13px; color: #bbb; height: 35px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+        .btn { background: #4CAF50; color: white; border: none; padding: 12px; font-size: 14px; border-radius: 8px; cursor: pointer; width: 90%; font-weight: bold; transition: 0.2s; margin-top: 5px; display: inline-block; }
         .btn:active { transform: scale(0.95); }
         .btn-paddy { background: #8B4513; }
         .btn-carrot { background: #FF9800; }
         .btn-chicken { background: #E91E63; }
         .crypto-box { background: #262626; border: 2px dashed #FCD535; padding: 12px; border-radius: 10px; margin-top: 15px; display: none; }
         .crypto-btn { background: #FCD535; color: #1E2329; width: 100%; padding: 12px; font-size: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        #debug-console { background: #000; color: #ff5252; font-family: monospace; font-size: 11px; padding: 8px; margin-top: 15px; border-radius: 5px; border: 1px solid #333; text-align: left; max-height: 60px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -34,7 +34,6 @@
         <h1>කුඹුරු මුදලාලි</h1>
         <div class="brand">POWERED BY MOLE KUKULA TEAM</div>
 
-        <!-- ලෙවල් සහ කාසි -->
         <div class="stats">
             <div>🪙 කාසි: <span id="coins" style="color:#FFD700;">0</span></div>
             <div><span class="level-badge">🚜 ලෙවල්: <span id="level">1</span></span></div>
@@ -48,7 +47,7 @@
                 <button class="btn btn-paddy" id="btn-paddy" onclick="handlePaddy()">හාන්න</button>
             </div>
 
-            <!-- 2. එළවළු කොටුව (Level 2 වලින් ඇරෙන්නේ) -->
+            <!-- 2. කැරට් කොටුව -->
             <div class="farm-box locked" id="box-carrot">
                 <div class="icon" id="icon-carrot">🔒</div>
                 <div class="status-text" id="text-carrot">කැරට් කොටුව</div>
@@ -56,7 +55,7 @@
                 <div class="lock-text" id="lock-carrot">Level 2 අවශ්‍යයි</div>
             </div>
 
-            <!-- 3. කුකුළු කූඩුව (Level 3 වලින් ඇරෙන්නේ) -->
+            <!-- 3. කුකුළු කූඩුව -->
             <div class="farm-box locked" id="box-chicken">
                 <div class="icon" id="icon-chicken">🔒</div>
                 <div class="status-text" id="text-chicken">කුකුළු කූඩුව</div>
@@ -64,42 +63,42 @@
                 <div class="lock-text" id="lock-chicken">Level 3 අවශ්‍යයි</div>
             </div>
 
-            <!-- 4. ගැනුම්කරු (මුදලාලි) -->
+            <!-- 4. මුදලාලි -->
             <div class="farm-box">
                 <div class="icon">👨‍💼</div>
-                <div class="status-text" style="color:#4CAF50; font-weight:bold;">දඹුල්ලේ මුදලාලි</div>
-                <div style="font-size:11px; color:#aaa; margin-bottom:5px;">අස්වැන්න මිලදී ගැනීමට ලෑස්තියි!</div>
-                <button class="btn" style="background:#00bcd4;" onclick="alert('අස්වැන්න නෙලූ සැනින් මුදලාලි ඔබට කාසි ලබා දෙයි!')">විස්තර</button>
+                <div class="status-text" id="text-mudalali" style="color:#4CAF50; font-weight:bold;">දඹුල්ලේ මුදලාලි</div>
+                <button class="btn" style="background:#00bcd4;" id="btn-mudalali" onclick="handleMudalali()">විස්තර</button>
             </div>
         </div>
 
-        <!-- ලෙවල් අප් වුණාම පෙනෙන සැබෑ Crypto/USDT උපයන බොක්ස් එක -->
         <div class="crypto-box" id="crypto-section">
             <h3 style="color:#FCD535; margin:0 0 5px 0; font-size:16px;">🎉 Certified Farmer!</h3>
-            <p style="font-size:12px; margin:0; color:#ddd;">දැන් මේ සෙල්ලම් කාසි ඇති. ඔයාගේ දක්ෂතාවයෙන් සැබෑ <b>USDT / Crypto</b> උපයා ගන්න අපේ ලින්ක් එකෙන් Binance එකට එකතු වෙන්න!</p>
-            <!-- ⚠️ පල්ලෙහා තියෙන ලින්ක් එක වෙනුවට ඔයාගේ ඇත්තම BINANCE REFERRAL ලින්ක් එක දාන්න මචං -->
+            <p style="font-size:12px; margin:0; color:#ddd;">දැන් සැබෑ <b>USDT / Crypto</b> උපයා ගන්න අපේ ලින්ක් එකෙන් Binance එකට එකතු වෙන්න!</p>
             <button class="crypto-btn" onclick="openBinance('https://accounts.binance.com')">🪙 Start Real Earning Now</button>
         </div>
+
+        <!-- වැරදි අල්ලන ඩිබග් කන්සෝල් එක -->
+        <div id="debug-console">System Status: Active (No Errors)</div>
     </div>
 
     <script>
-        // ටෙලිග්‍රෑම් WebApp එක ක්‍රැෂ් වෙන්න නැතුව ආරක්ෂිතව සක්‍රීය කිරීම
+        // ක්‍රෑෂ් නොවී වැරදි ට්‍රැක් කරන සිස්ටම් එකක්
+        window.onerror = function(msg, url, linenumber) {
+            document.getElementById('debug-console').innerHTML = "ERROR: " + msg + " (Line: " + linenumber + ")";
+            return false;
+        };
+
         let tg = null;
         if (window.Telegram && window.Telegram.WebApp) {
             tg = window.Telegram.WebApp;
-            try {
-                tg.expand();
-            } catch (e) {
-                console.error("Telegram App configuration bypassed safely.");
-            }
+            try { tg.expand(); } catch (e) { }
         }
 
         let coins = 0;
         let level = 1;
-        
-        let paddyStage = 0; // 0: හාන්න, 1: වපුරන්න, 2: කපන්න
-        let carrotStage = 0; // 0: වවන්න, 1: උදුරන්න
-        let chickenStage = 0; // 0: කවන්න, 1: බිත්තර ගන්න
+        let paddyStage = 0; 
+        let carrotStage = 0; 
+        let chickenStage = 0; 
 
         function checkLevelUp() {
             if (coins >= 1000 && level === 2) {
@@ -121,7 +120,6 @@
                 document.getElementById('btn-carrot').innerHTML = "කැරට් වවන්න";
                 document.getElementById('btn-carrot').disabled = false;
                 document.getElementById('lock-carrot').style.display = "none";
-                
                 document.getElementById('crypto-section').style.display = "block";
             }
         }
@@ -135,7 +133,7 @@
                 paddyStage = 1;
                 icon.innerHTML = "💦";
                 txt.innerHTML = "වපුරා ඇත. වැවෙමින් පවතී...";
-                btn.innerHTML = "පැල වෙනකන් ඉන්න...";
+                btn.innerHTML = "පොඩ්ඩක් ඉන්න...";
                 btn.disabled = true;
                 setTimeout(() => {
                     paddyStage = 2;
@@ -143,13 +141,13 @@
                     txt.innerHTML = "ගොයම් පැහිලා බන්!";
                     btn.innerHTML = "අස්වැන්න කපන්න";
                     btn.disabled = false;
-                }, 3000);
+                }, 2000);
             } else if (paddyStage === 2) {
                 paddyStage = 0;
                 coins += 100;
                 document.getElementById('coins').innerHTML = coins;
                 icon.innerHTML = "🟫";
-                txt.innerHTML = "වී මලු විකුණා කාසි 100ක් ලැබුණා!";
+                txt.innerHTML = "කාසි 100ක් ලැබුණා!";
                 btn.innerHTML = "හාන්න";
                 checkLevelUp();
             }
@@ -167,16 +165,16 @@
                 btn.innerHTML = "පොඩ්ඩක් ඉන්න...";
                 btn.disabled = true;
                 setTimeout(() => {
-                    txt.innerHTML = "ලොකු කැරට්! උදුරන්න ලෑස්තියි.";
+                    txt.innerHTML = "කැරට් උදුරන්න ලෑස්තියි.";
                     btn.innerHTML = "කැරට් උදුරන්න";
                     btn.disabled = false;
-                }, 4000);
+                }, 2000);
             } else if (carrotStage === 1) {
                 carrotStage = 0;
                 coins += 250;
                 document.getElementById('coins').innerHTML = coins;
                 icon.innerHTML = "🟫";
-                txt.innerHTML = "කැරට් විකුණා කාසි 250ක් ලැබුණා!";
+                txt.innerHTML = "කාසි 250ක් ලැබුණා!";
                 btn.innerHTML = "කැරට් වවන්න";
                 checkLevelUp();
             }
@@ -190,27 +188,34 @@
             if (chickenStage === 0) {
                 chickenStage = 1;
                 icon.innerHTML = "🐤";
-                txt.innerHTML = "කුකුළා කෑම කනවා... 🥚";
-                btn.innerHTML = "බිත්තර දානකන් ඉන්න...";
+                txt.innerHTML = "කුකුළා කෑම කනවා...";
+                btn.innerHTML = "ඉන්න...";
                 btn.disabled = true;
                 setTimeout(() => {
                     icon.innerHTML = "🐔 🥚";
-                    txt.innerHTML = "ඔන්න බිත්තර දාලා!";
-                    btn.innerHTML = "බිත්තර එකතු කරන්න";
+                    txt.innerHTML = "බිත්තර දාලා!";
+                    btn.innerHTML = "බිත්තර ගන්න";
                     btn.disabled = false;
-                }, 5000);
+                }, 2000);
             } else if (chickenStage === 1) {
                 chickenStage = 0;
                 coins += 500;
                 document.getElementById('coins').innerHTML = coins;
                 icon.innerHTML = "🐔";
-                txt.innerHTML = "බිත්තර විකුණා කාසි 500ක් ලැබුණා!";
+                txt.innerHTML = "කාසි 500ක් ලැබුණා!";
                 btn.innerHTML = "කෑම දාන්න";
                 checkLevelUp();
             }
         }
 
-        function openBinance(https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_DZTQC&utm_source=referral_entrance {
+        function handleMudalali() {
+            document.getElementById('text-mudalali').innerHTML = "අස්වැන්න කපපු සැනින් මම සල්ලි දෙනවා මලයා!";
+            setTimeout(() => {
+                document.getElementById('text-mudalali').innerHTML = "දඹුල්ලේ මුදලාලි";
+            }, 4000);
+        }
+
+        function openBinance()https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_DZTQC&utm_source=referral_entrance {
             if (tg && typeof tg.openLink === 'function') {
                 tg.openLink(url);
             } else {
