@@ -75,7 +75,7 @@
 
         <!-- ලෙවල් අප් වුණාම පෙනෙන සැබෑ Crypto/USDT උපයන බොක්ස් එක -->
         <div class="crypto-box" id="crypto-section">
-            <h3 style="color:#FCD535; margin:0 0 5px 0; font-size:16px;">🎉 සුභ පැතුම්! ඔයා දැන් සුපිරි ගොවියෙක්!</h3>
+            <h3 style="color:#FCD535; margin:0 0 5px 0; font-size:16px;">🎉 Certified Farmer!</h3>
             <p style="font-size:12px; margin:0; color:#ddd;">දැන් මේ සෙල්ලම් කාසි ඇති. ඔයාගේ දක්ෂතාවයෙන් සැබෑ <b>USDT / Crypto</b> උපයා ගන්න අපේ ලින්ක් එකෙන් Binance එකට එකතු වෙන්න!</p>
             <!-- ⚠️ පල්ලෙහා තියෙන ලින්ක් එක වෙනුවට ඔයාගේ ඇත්තම BINANCE REFERRAL ලින්ක් එක දාන්න මචං -->
             <button class="crypto-btn" onclick="openBinance('https://accounts.binance.com')">🪙 Start Real Earning Now</button>
@@ -83,9 +83,16 @@
     </div>
 
     <script>
-        // ටෙලිග්‍රෑම් මිනි ඇප් එක සක්‍රීය කිරීම
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // ඇප් එක ලොකුවට ඕපන් කරන්න
+        // ටෙලිග්‍රෑම් WebApp එක ක්‍රැෂ් වෙන්න නැතුව ආරක්ෂිතව සක්‍රීය කිරීම
+        let tg = null;
+        if (window.Telegram && window.Telegram.WebApp) {
+            tg = window.Telegram.WebApp;
+            try {
+                tg.expand();
+            } catch (e) {
+                console.error("Telegram App configuration bypassed safely.");
+            }
+        }
 
         let coins = 0;
         let level = 1;
@@ -98,8 +105,7 @@
             if (coins >= 1000 && level === 2) {
                 level = 3;
                 document.getElementById('level').innerHTML = level;
-                // Level 3 Unlocks Chicken
-                document.getElementById('box-chicken').classList.remove('opacity', 'locked');
+                document.getElementById('box-chicken').classList.remove('locked');
                 document.getElementById('icon-chicken').innerHTML = "🐔";
                 document.getElementById('text-chicken').innerHTML = "කුකුළා බඩගින්නේ";
                 document.getElementById('btn-chicken').innerHTML = "කෑම දාන්න";
@@ -109,7 +115,6 @@
             if (coins >= 300 && level === 1) {
                 level = 2;
                 document.getElementById('level').innerHTML = level;
-                // Level 2 Unlocks Carrot & Crypto Box
                 document.getElementById('box-carrot').classList.remove('locked');
                 document.getElementById('icon-carrot').innerHTML = "🌱";
                 document.getElementById('text-carrot').innerHTML = "තැන ලෑස්තියි";
@@ -117,12 +122,10 @@
                 document.getElementById('btn-carrot').disabled = false;
                 document.getElementById('lock-carrot').style.display = "none";
                 
-                // Show Crypto Referral Box
                 document.getElementById('crypto-section').style.display = "block";
             }
         }
 
-        // 1. කුඹුරු පද්ධතිය
         function handlePaddy() {
             let btn = document.getElementById('btn-paddy');
             let txt = document.getElementById('text-paddy');
@@ -152,7 +155,6 @@
             }
         }
 
-        // 2. කැරට් පද්ධතිය
         function handleCarrot() {
             let btn = document.getElementById('btn-carrot');
             let txt = document.getElementById('text-carrot');
@@ -180,7 +182,6 @@
             }
         }
 
-        // 3. කුකුළු පද්ධතිය
         function handleChicken() {
             let btn = document.getElementById('btn-chicken');
             let txt = document.getElementById('text-chicken');
@@ -209,9 +210,12 @@
             }
         }
 
-        // ටෙලිග්‍රෑම් එක ඇතුළේ ලින්ක් එක හරියටම ඕපන් කරන ෆන්ක්ෂන් එක
-        function openBinance(https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_DZTQC&utm_source=referral_entrance) {
-            tg.openLink(url);
+        function openBinance(https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_DZTQC&utm_source=referral_entrance {
+            if (tg && typeof tg.openLink === 'function') {
+                tg.openLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
         }
     </script>
 </body>
