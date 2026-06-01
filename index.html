@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>කුඹුරු මුදලාලි - Paddy Tycoon</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #121212; color: white; text-align: center; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 2px solid #4CAF50; }
+        h1 { color: #4CAF50; margin-bottom: 5px; font-size: 28px; }
+        .brand { font-size: 11px; color: #aaa; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
+        .stats { background: #2a2a2a; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 18px; text-align: left; display: flex; justify-content: space-around; }
+        .coin-count { color: #FFD700; font-weight: bold; }
+        .paddy-count { color: #FFA726; font-weight: bold; }
+        .field-box { background: #151515; padding: 30px 10px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #444; }
+        .field-img { font-size: 70px; margin-bottom: 10px; animation: pulse 2s infinite; }
+        .field-status { font-size: 18px; font-weight: bold; color: #e0e0e0; }
+        .btn { background: #4CAF50; color: white; border: none; padding: 16px 30px; font-size: 18px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-plough { background: #8B4513; }
+        .btn-sow { background: #FF9800; }
+        .btn-harvest { background: #2E7D32; }
+        .progress-bar { width: 100%; background-color: #333; border-radius: 5px; margin: 15px 0; display: none; height: 12px; overflow: hidden; }
+        .progress { width: 0%; height: 10px; background-color: #4CAF50; transition: width 0.1s linear; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>කුඹුරු මුදලාලි</h1>
+        <div class="brand">POWERED BY MOLE KUKULA TEAM</div>
+
+        <!-- සල්ලි සහ වී මලු ප්‍රමාණය -->
+        <div class="stats">
+            <div>🪙 කාසි: <span id="coins" class="coin-count">0</span></div>
+            <div>🌾 වී මලු: <span id="paddy" class="paddy-count">0</span></div>
+        </div>
+
+        <!-- කුඹුරේ තත්ත්වය -->
+        <div class="field-box">
+            <div class="field-img" id="field-icon">🟫</div>
+            <div class="field-status" id="field-text">කුඹුර හිස් (හාන්න ලෑස්තියි)</div>
+            <div class="progress-bar" id="prog-bar"><div class="progress" id="prog"></div></div>
+        </div>
+
+        <!-- ප්‍රධාන ක්‍රියාකාරී බොත්තම -->
+        <button class="btn btn-plough" id="action-btn" onclick="handleAction()">🚜 කුඹුර හාන්න</button>
+        
+        <!-- Binance එකවුන්ට් එක ප්‍රමෝට් කරන බොත්තම -->
+        <button class="btn" style="background:#FCD535; color:#1E2329; margin-top:25px; font-size:14px; padding:10px;" onclick="window.open('https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_DZTQC&utm_source=referral_entrance, '_blank')">
+            🪙 Start Crypto Trading & Earn
+        </button>
+    </div>
+
+    <script>
+        let coins = 0;
+        let paddy = 0;
+        let stage = 0; // 0: හාන්න, 1: වපුරන්න, 2: පැලවෙනවා, 3: කපන්න
+
+        function handleAction() {
+            const btn = document.getElementById('action-btn');
+            const text = document.getElementById('field-text');
+            const icon = document.getElementById('field-icon');
+            const progBar = document.getElementById('prog-bar');
+            const prog = document.getElementById('prog');
+
+            if (stage === 0) {
+                // හාන්න ඉවරයි -> වපුරන්න ලෑස්තියි
+                stage = 1;
+                icon.innerHTML = "🌱";
+                text.innerHTML = "කුඹුර හා නිමයි. දැන් වපුරන්න!";
+                btn.innerHTML = "🌾 වී වපුරන්න";
+                btn.className = "btn btn-sow";
+            } 
+            else if (stage === 1) {
+                // වපුරනවා -> ගොයම් පැල වැවෙන ටයිමර් එක
+                stage = 2;
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+                icon.innerHTML = "💦";
+                text.innerHTML = "ගොයම් පැල වැවෙමින් පවතී...";
+                progBar.style.display = "block";
+                
+                let width = 0;
+                let interval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(interval);
+                        stage = 3;
+                        btn.disabled = false;
+                        btn.style.opacity = "1";
+                        icon.innerHTML = "🌾";
+                        text.innerHTML = "අස්වැන්න පැහිලා! කපන්න ලෑස්තියි.";
+                        btn.innerHTML = "✂️ ගොයම් කපන්න";
+                        btn.className = "btn btn-harvest";
+                        progBar.style.display = "none";
+                        prog.style.width = "0%";
+                    } else {
+                        width += 4; // තත්පර 2.5කින් වැවෙනවා
+                        prog.style.width = width + "%";
+                    }
+                }, 100);
+            } 
+            else if (stage === 3) {
+                // අස්වනු නෙලීම සහ විකිණීම
+                paddy += 5; // එක වතාවකට වී මලු 5ක් ලැබෙනවා
+                let earnedCoins = paddy * 15; // වී මල්ලක් කාසි 15යි
+                coins += earnedCoins;
+                
+                // ඩේටා අප්ඩේට් කිරීම
+                document.getElementById('coins').innerHTML = coins;
+                
+                // පද්ධතිය මුලටම හැරවීම
+                stage = 0;
+                icon.innerHTML = "🟫";
+                text.innerHTML = "අස්වැන්න විකුණා 🪙 " + earnedCoins + " ක් ලැබුණා! කුඹුර හිස්.";
+                btn.innerHTML = "🚜 කුඹුර හාන්න";
+                btn.className = "btn btn-plough";
+                paddy = 0;
+            }
+        }
+    </script>
+</body>
+</html>
